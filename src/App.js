@@ -2,6 +2,9 @@ import React from 'react';
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Alert from 'react-bootstrap/Alert'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar'
 
 /**
  * note: make axios process cross origin
@@ -47,10 +50,13 @@ class App extends React.Component {
   error_handler = e => {
     if (e.response && e.response.data && e.response.data.message) {
       this.setState({'error': e.response.data.message})
-    } else if (e.response) {
-      this.setState({'error': e.response})
-    } else {
-      this.setState({'error': e})
+    } else if (e.response && e.response.status && e.response.statusText) {
+      const {status, statusText} = e.response
+      this.setState({'error': JSON.stringify({status, "message": statusText})})
+    } else if(e.response) {
+      this.setState({'error': JSON.stringify(e.response)})
+    } else if(e) {
+      this.setState({'error': JSON.stringify(e)})
     }
   }
 
@@ -109,60 +115,75 @@ class App extends React.Component {
 
   render() {
     return (
-        <div>
+        <div className="container">
+          <div className="page-header text-center">
+            <h1>OBP API SDK ReactJs</h1>
+            <p>
+              This is a demo of direct login, fetch banks and fetch accounts
+            </p>
+          </div> <hr/>
           {
             this.state.token ?
                 <div>
-                  <p>DirectLoginToken: {this.state.token}<br/>
+                  <p>DirectLoginToken: <code>{this.state.token}</code><br/>
                    All the follow http request will have the follow headers: <br/>
-                    <code>
-                      {
+
+                      <code style={{"white-space":"pre-line"}}>
+                        {
                         `
                         headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': DirectLogin token="${this.state.token}"
+                          'Content-Type': 'application/json',
+                          'Authorization': DirectLogin token="${this.state.token}"
                         }
                         `
-                      }
-                    </code>
+                        }
+                      </code>
                   </p>
                   <div>
-                    <button type="button" onClick={this.fetch_banks}>Get Banks</button> <button type="button" onClick={this.clear_token}>Reset Token</button> <br/>
+                    <ButtonToolbar>
+                      <Button variant="primary" onClick={this.fetch_banks}>Get Banks</Button> &nbsp;
+                      <Button variant="primary" onClick={this.clear_token}>Reset Token</Button>
+                    </ButtonToolbar>
                     banks:
-                    <ul>
+                    <ul class="list-group">
                       { this.state.banks.length ?
-                        this.state.banks.map(bank => (<li key={bank.id}>{bank.short_name}</li>)) :
-                        <li>no banks</li>
+                        this.state.banks.map(bank => (<li class="list-group-item" key={bank.id}>{bank.short_name}</li>)) :
+                        <li class="list-group-item">no banks</li>
                       }
                     </ul>
                   </div>
                   <div>
-                    <button type="button" onClick={this.fetch_accounts}>Get Accounts</button> <br/>
+                    <Button variant="primary" onClick={this.fetch_accounts}>Get Accounts</Button> <br/>
                     accounts:
-                    <ul>
+                    <ul class="list-group">
                       {
                         this.state.accounts.length ?
-                        this.state.accounts.map(account => (<li key={account.id}>{account.label}</li>)) :
-                        <li>no accounts</li>
+                        this.state.accounts.map(account => (<li class="list-group-item" key={account.id}>{account.label}</li>)) :
+                        <li class="list-group-item">no accounts</li>
                       }
                     </ul>
                   </div>
                 </div>
                 :
-                <div>
-                  <h1>get direct login token</h1>
-                  <label htmlFor="base_url">obp api base url: </label>
-                  <input id="base_url" type="text" value={this.state.base_url} onChange={this.base_url_onchange}/> <br/>
-                  <label htmlFor="consumer_key">consumer key: </label>
-                  <input id="consumer_key" type="text" value={this.state.consumer_key}
-                         onChange={this.consumer_key_onchange}/> <br/>
-                  <label htmlFor="username">username:</label>
-                  <input id="username" type="text" value={this.state.username} onChange={this.username_onchange}/> <br/>
-                  <label htmlFor="password">password: </label>
-                  <input id="password" type="password" value={this.state.password} onChange={this.password_onchange}/>
-                  <br/>
-                  <button type="button" onClick={this.fetch_direct_login_token}>get Token</button>
-                </div>
+                <Form autocomplete="on">
+                    <Form.Group controlId="formGroupApiUrl">
+                      <Form.Label>Obp api base url:</Form.Label>
+                      <Form.Control type="url" placeholder="Enter obp api base url" required="required" value={this.state.base_url} onChange={this.base_url_onchange} />
+                    </Form.Group>
+                    <Form.Group controlId="formGroupConsumerKey">
+                      <Form.Label>Consumer key</Form.Label>
+                      <Form.Control type="text" placeholder="Enter Consumer key" required="required" value={this.state.consumer_key} onChange={this.consumer_key_onchange}/>
+                    </Form.Group>
+                    <Form.Group controlId="formGroupUsername">
+                      <Form.Label>User name</Form.Label>
+                      <Form.Control type="text" placeholder="Enter User name" required="required" value={this.state.username} onChange={this.username_onchange}/>
+                    </Form.Group>
+                    <Form.Group controlId="formGroupPassword">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control type="password" placeholder="Password" required="required" value={this.state.password} onChange={this.password_onchange}/>
+                    </Form.Group>
+                    <Button variant="primary" onClick={this.fetch_direct_login_token} >Get Token</Button>
+                </Form>
           }
           {
             this.state.error ? <Alert variant='danger'> {this.state.error} </Alert> : ''
