@@ -128,7 +128,7 @@ class App extends React.Component {
                   <p>DirectLoginToken: <code>{this.state.token}</code><br/>
                    All the follow http request will have the follow headers: <br/>
 
-                      <code style={{"white-space":"pre-line"}}>
+                      <code style={{"whiteSpace":"pre-line"}}>
                         {
                         `
                         headers: {
@@ -145,27 +145,27 @@ class App extends React.Component {
                       <Button variant="primary" onClick={this.clear_token}>Reset Token</Button>
                     </ButtonToolbar>
                     banks:
-                    <ul class="list-group">
+                    <ul className="list-group">
                       { this.state.banks.length ?
-                        this.state.banks.map(bank => (<li class="list-group-item" key={bank.id}>{bank.short_name}</li>)) :
-                        <li class="list-group-item">no banks</li>
+                        this.state.banks.map(bank => (<li className="list-group-item" key={bank.id}>{bank.short_name}</li>)) :
+                        <li className="list-group-item">no banks</li>
                       }
                     </ul>
                   </div>
                   <div>
                     <Button variant="primary" onClick={this.fetch_accounts}>Get Accounts</Button> <br/>
                     accounts:
-                    <ul class="list-group">
+                    <ul className="list-group">
                       {
                         this.state.accounts.length ?
-                        this.state.accounts.map(account => (<li class="list-group-item" key={account.id}>{account.label}</li>)) :
-                        <li class="list-group-item">no accounts</li>
+                        this.state.accounts.map(account => (<li className="list-group-item" key={account.id}>{account.label}</li>)) :
+                        <li className="list-group-item">no accounts</li>
                       }
                     </ul>
                   </div>
                 </div>
                 :
-                <Form autocomplete="on">
+                <Form autoComplete="on">
                     <Form.Group controlId="formGroupApiUrl">
                       <Form.Label>Obp api base url:</Form.Label>
                       <Form.Control type="url" placeholder="Enter obp api base url" required="required" value={this.state.base_url} onChange={this.base_url_onchange} />
